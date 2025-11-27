@@ -44,6 +44,20 @@ export const fetchAccounts = createAsyncThunk(
     ];
   }
 );
+export const addAccount = createAsyncThunk(
+    'accounts/addAccount',
+    async (newAccount: Omit<Account, 'id' | 'createdAt'>) => {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Return the new account with a generated ID and mock data
+      return {
+        ...newAccount,
+        id: Math.random().toString(36).substr(2, 9), // simple id generation
+        createdAt: new Date().toISOString(),
+      };
+    }
+)
 
 // The slice
 const accountsSlice = createSlice({
@@ -58,6 +72,14 @@ const accountsSlice = createSlice({
     deleteAccount: (state, action: PayloadAction<string>) => {
       state.accounts = state.accounts.filter(acc => acc.id !== action.payload);
     },
+    //edit account 
+    editAccount: (state, action: PayloadAction<{ id: string; changes: Partial<Account> }>) => {
+        const index = state.accounts.findIndex(acc => acc.id === action.payload.id);
+        if(index !== -1){
+            state.accounts[index] = { ...state.accounts[index], ...action.payload.changes };
+        }
+    },
+    
   },
   extraReducers: (builder) => {
     // Handle async thunk states
@@ -73,17 +95,22 @@ const accountsSlice = createSlice({
       .addCase(fetchAccounts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch accounts';
+      })
+      .addCase(addAccount.fulfilled, (state, action) => {
+        state.accounts.push(action.payload);
       });
   },
 });
 
 // Export actions
-export const { addAccountDirect, deleteAccount } = accountsSlice.actions;
+export const { addAccountDirect, deleteAccount, editAccount } = accountsSlice.actions;
 
 // Selectors - functions to read from state
 export const selectAllAccounts = (state: RootState) => state.accounts.accounts;
 export const selectAccountsLoading = (state: RootState) => state.accounts.loading;
-
+export const selectAccountsByType = (state:RootState, accountType: string) =>{
+    return state.accounts.accounts.filter(acc => acc.type === accountType);
+}
 // Computed selector - calculates total balance
 export const selectTotalBalance = (state: RootState) => {
   return state.accounts.accounts.reduce((total: number, acc: Account) => {
