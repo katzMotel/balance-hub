@@ -1,15 +1,22 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import type { Transaction } from '@/types/types.index';
 
 interface TransactionsState {
   transactions: Transaction[];
   loading: boolean;
+  filters: {
+    category?: string;
+    type?: 'income' | 'expense';
+    accountId?: string;
+    dateRange?: { start: string; end: string };
+  };
 }
 
 const initialState: TransactionsState = {
   transactions: [],
   loading: false,
+  filters: {},
 };
 
 export const fetchTransactions = createAsyncThunk(
@@ -54,7 +61,17 @@ export const fetchTransactions = createAsyncThunk(
 const transactionsSlice = createSlice({
   name: 'transactions',
   initialState,
-  reducers: {},
+  reducers: {
+    setFilter: (state, action: PayloadAction<{ key: string; value: any }>) => {
+      state.filters = {
+        ...state.filters,
+        [action.payload.key]: action.payload.value,
+      };
+    },
+    clearFilters: (state) => {
+      state.filters = {};
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTransactions.pending, (state) => {
@@ -67,9 +84,35 @@ const transactionsSlice = createSlice({
   },
 });
 
+// Export actions
+export const { setFilter, clearFilters } = transactionsSlice.actions;
+
 // Selectors
 export const selectAllTransactions = (state: RootState) => 
   state.transactions.transactions;
+
+export const selectFilteredTransactions = (state: RootState) => {
+  let filtered = state.transactions.transactions;
+  
+  if (state.transactions.filters.category) {
+    filtered = filtered.filter(t => t.category === state.transactions.filters.category);
+  }
+  if (state.transactions.filters.type) {
+    filtered = filtered.filter(t => t.type === state.transactions.filters.type);
+  }
+  if (state.transactions.filters.accountId) {
+    filtered = filtered.filter(t => t.accountId === state.transactions.filters.accountId);
+  }
+  if (state.transactions.filters.dateRange) {
+    const { start, end } = state.transactions.filters.dateRange;
+    filtered = filtered.filter(t => {
+      const date = new Date(t.date).getTime();
+      return date >= new Date(start).getTime() && date <= new Date(end).getTime();
+    });
+  }
+  
+  return filtered;
+};
 
 export const selectTotalIncome = (state: RootState) =>
   state.transactions.transactions
