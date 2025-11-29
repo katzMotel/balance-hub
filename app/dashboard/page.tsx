@@ -16,6 +16,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { formatCurrency, formatDate } from '@/lib/utils/format';
 import { Wallet, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
+import FinanceChart from '@/components/charts/AreaChart'; // Removed destructuring
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
@@ -44,6 +45,11 @@ export default function DashboardPage() {
         <p className="text-gray-600 dark:text-gray-400">
           Here's your financial overview
         </p>
+      </div>
+
+      {/* Chart */}
+      <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+        <FinanceChart /> {/* Changed from AreaChart to FinanceChart */}
       </div>
 
       {/* Stats Grid */}
@@ -87,15 +93,15 @@ export default function DashboardPage() {
                 <p className="font-medium text-gray-900 dark:text-white">
                   {transaction.description}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {formatDate(transaction.date)} • {transaction.category}
                 </p>
               </div>
               <span
                 className={`font-semibold ${
                   transaction.type === 'income'
-                    ? 'text-green-600'
-                    : 'text-red-600'
+                    ? 'text-success-600 dark:text-success-400'
+                    : 'text-danger-600 dark:text-danger-400'
                 }`}
               >
                 {formatCurrency(transaction.amount, true)}
