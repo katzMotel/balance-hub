@@ -11,7 +11,8 @@ import {
   Wallet, 
   Receipt, 
   TrendingUp,
-  X 
+  X, 
+  Settings
 } from 'lucide-react';
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Accounts', href: '/accounts', icon: Wallet },
   { name: 'Transactions', href: '/transactions', icon: Receipt },
   { name: 'Investments', href: '/investments', icon: TrendingUp },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -49,7 +51,7 @@ export function Sidebar() {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center justify-between px-6 border-b">
-            <h1 className="text-xl font-bold dark:text-gray-300">FinancePro</h1>
+            <h1 className="text-xl font-bold dark:text-gray-300">BalanceHub</h1>
             <button
               onClick={() => dispatch(setSidebarOpen(false))}
               className="lg:hidden"
