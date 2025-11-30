@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/utils/format";
 import { Plus, Edit, Trash2, CreditCard } from "lucide-react";
 import { AddAccountModal } from "@/components/features/accounts/AddAccountModal";
 import { EditAccountModal } from "@/components/features/accounts/EditAccountModal";
+import { DeleteAccountModal } from "@/components/features/accounts/DeleteAccountModal";
 import { Account } from "@/types/types.index";
 
 export default function AccountsPage() {
@@ -18,7 +19,8 @@ export default function AccountsPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-    
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
     useEffect(() => {
         dispatch(fetchAccounts());
     }, [dispatch]);
@@ -27,7 +29,10 @@ export default function AccountsPage() {
         setSelectedAccount(account);
         setIsEditModalOpen(true);
     };
-
+   const handleDelete = (account: Account) => {
+       setSelectedAccount(account);
+       setIsDeleteModalOpen(true);
+   };
     return (
         <div className="space-y-6">
             {/* Page Header */}
@@ -90,7 +95,9 @@ export default function AccountsPage() {
                                         >
                                             <Edit className="h-4 w-4" />
                                         </button>
-                                        <button className="text-gray-400 hover:text-danger-600 dark:hover:text-danger-400">
+                                        <button className="text-gray-400 hover:text-danger-600 dark:hover:text-danger-400"
+                                            onClick={() => handleDelete(account)}
+                                        >
                                             <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>
@@ -154,6 +161,14 @@ export default function AccountsPage() {
                     }}
                     account={selectedAccount}
                 />
+            )}
+
+            {selectedAccount && (
+                <DeleteAccountModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    account={selectedAccount}
+                /> 
             )}
         </div>
     );
