@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setFilter, clearFilters, selectFilteredTransactions } from "@/store/slices/transactionsSlice";
+import { setFilter, clearFilters, selectFilteredTransactions, setSortBy, setSortOrder, setSearchQuery } from "@/store/slices/transactionsSlice";
 
 export function TransactionFilters() {
     const dispatch = useAppDispatch();

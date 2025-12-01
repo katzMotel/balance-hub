@@ -11,12 +11,18 @@ interface TransactionsState {
     accountId?: string;
     dateRange?: { start: string; end: string };
   };
+  sortBy: 'date' | 'amount' | 'description';
+  sortOrder: 'asc' | 'desc';
+  searchQuery: string;
 }
 
 const initialState: TransactionsState = {
   transactions: [],
   loading: false,
   filters: {},
+  sortBy: 'date',
+  sortOrder: 'desc',
+  searchQuery: '',
 };
 
 export const fetchTransactions = createAsyncThunk(
@@ -71,6 +77,15 @@ const transactionsSlice = createSlice({
     clearFilters: (state) => {
       state.filters = {};
     },
+    setSortBy: (state, action: PayloadAction<'date' | 'amount' | 'description'>) => {
+      state.sortBy = action.payload;
+    },
+    setSortOrder: (state, action: PayloadAction<'asc' | 'desc'>) => {
+      state.sortOrder = action.payload;
+    },
+    setSearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -85,15 +100,13 @@ const transactionsSlice = createSlice({
 });
 
 // Export actions
-export const { setFilter, clearFilters } = transactionsSlice.actions;
+export const { setFilter, clearFilters, setSortBy, setSortOrder, setSearchQuery } = transactionsSlice.actions;
 
 // Selectors
-export const selectAllTransactions = (state: RootState) => 
-  state.transactions.transactions;
-
 export const selectFilteredTransactions = (state: RootState) => {
   let filtered = state.transactions.transactions;
   
+  // Apply filters
   if (state.transactions.filters.category) {
     filtered = filtered.filter(t => t.category === state.transactions.filters.category);
   }
@@ -111,7 +124,31 @@ export const selectFilteredTransactions = (state: RootState) => {
     });
   }
   
-  return filtered;
+  // Apply search
+  if (state.transactions.searchQuery) {
+    const query = state.transactions.searchQuery.toLowerCase();
+    filtered = filtered.filter(t => 
+      t.description.toLowerCase().includes(query) ||
+      t.category.toLowerCase().includes(query)
+    );
+  }
+  
+  // Apply sorting
+  const sorted = [...filtered].sort((a, b) => {
+    let comparison = 0;
+    
+    if (state.transactions.sortBy === 'date') {
+      comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+    } else if (state.transactions.sortBy === 'amount') {
+      comparison = Math.abs(a.amount) - Math.abs(b.amount);
+    } else if (state.transactions.sortBy === 'description') {
+      comparison = a.description.localeCompare(b.description);
+    }
+    
+    return state.transactions.sortOrder === 'asc' ? comparison : -comparison;
+  });
+  
+  return sorted;
 };
 
 export const selectTotalIncome = (state: RootState) =>

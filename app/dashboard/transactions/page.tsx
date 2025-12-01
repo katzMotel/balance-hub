@@ -7,7 +7,7 @@ import {
   selectFilteredTransactions,
 } from '@/store/slices/transactionsSlice';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { TransactionFilters } from '@/app/dashboard/transactions/TransactionFilters';
+import { TransactionFilters } from '@/components/features/transactions/TransactionFilters';
 import { formatCurrency, formatDate } from '@/lib/utils/format';
 
 export default function TransactionsPage() {
