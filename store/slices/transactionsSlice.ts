@@ -63,7 +63,17 @@ export const fetchTransactions = createAsyncThunk(
     ];
   }
 );
-
+export const addTransaction = createAsyncThunk(
+    'transactions/addTransaction',
+    async (newTransaction: Omit<Transaction, 'id' | 'createdAt'>) => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return {
+        ...newTransaction,
+        id: Math.random().toString(36).substr(2, 9),
+        createdAt: new Date().toISOString(),
+      };
+    }
+);
 const transactionsSlice = createSlice({
   name: 'transactions',
   initialState,
@@ -86,6 +96,15 @@ const transactionsSlice = createSlice({
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
+    editTransaction: (state, action: PayloadAction<{id: string; changes: Partial<Transaction>}>) => {
+        const index = state.transactions.findIndex(t => t.id === action.payload.id);
+        if (index !== -1) {
+            state.transactions[index] = {...state.transactions[index], ...action.payload.changes};
+        }
+    },
+    deleteTransaction: (state, action: PayloadAction<string>) => {
+      state.transactions = state.transactions.filter(t => t.id !== action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -95,12 +114,15 @@ const transactionsSlice = createSlice({
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.loading = false;
         state.transactions = action.payload;
-      });
+      })
+      .addCase(addTransaction.fulfilled, (state, action) => {
+        state.transactions.push(action.payload);
+      });   
   },
 });
 
 // Export actions
-export const { setFilter, clearFilters, setSortBy, setSortOrder, setSearchQuery } = transactionsSlice.actions;
+export const { setFilter, clearFilters, setSortBy, setSortOrder, setSearchQuery, editTransaction, deleteTransaction } = transactionsSlice.actions;
 
 // Selectors
 export const selectFilteredTransactions = (state: RootState) => {
