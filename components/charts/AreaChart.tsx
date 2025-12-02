@@ -34,11 +34,17 @@ export default function FinanceChart() {
         />
         <Tooltip 
           contentStyle={{
-            backgroundColor: 'rgb(var(--color-gray-800))',
-            border: 'none',
-            borderRadius: '0.5rem',
+          backgroundColor: 'var(--color-gray-800)', // Dark background
+          border: 'none',
+          borderRadius: '0.5rem',
+          color: 'var(--color-white)', // Add this for text color
           }}
-          labelStyle={{ color: 'rgb(var(--color-gray-300))' }}
+          labelStyle={{ 
+          color: 'var(--color-gray-300)' // Label text color
+          }}
+          itemStyle={{
+          color: 'var(--color-white)' // Item text color - add this!
+          }}
         />
         <Area 
           type="monotone" 

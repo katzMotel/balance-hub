@@ -11,13 +11,15 @@ import {
   Receipt, 
   TrendingUp,
   X, 
-  Settings
+  Settings,
+  PieChart
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Accounts', href: '/dashboard/accounts', icon: Wallet },
   { name: 'Transactions', href: '/dashboard/transactions', icon: Receipt },
+  { name: 'Budgets', href:'/dashboard/budgets',icon: PieChart},
   { name: 'Investments', href: '/dashboard/investments', icon: TrendingUp },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];

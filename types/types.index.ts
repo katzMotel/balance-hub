@@ -19,3 +19,11 @@ export interface Transaction{
   createdAt: string; 
   
 }
+export interface Budget{
+  id: string;
+  category: string;
+  amount: number;
+  period: 'monthly' | 'weekly' | 'yearly';
+  spent: number;
+  createdAt: string;
+}
