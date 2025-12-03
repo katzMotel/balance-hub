@@ -27,3 +27,14 @@ export interface Budget{
   period: 'monthly' | 'weekly' | 'yearly';
   createdAt: string;
 }
+export interface Investment{
+  id: string;
+  symbol: string;
+  name: string;
+  shares: number;
+  purchasePrice: number;
+  currentPrice: number;
+  accountId: string;
+  purchaseDate: string;
+  createdAt: string;
+}
