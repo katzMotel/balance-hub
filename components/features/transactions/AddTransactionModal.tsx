@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addTransaction } from '@/store/slices/transactionsSlice';
 import { TransactionType } from '@/types/types.index';
 import { fetchAccounts, selectAllAccounts } from '@/store/slices/accountsSlice';
-
+import { fetchBudgets, selectAllBudgets } from '@/store/slices/budgetsSlice';
 interface AddTransactionModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -23,9 +23,10 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
     const [type, setType] = useState<TransactionType>('expense');
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAllAccounts);
-    
+    const budgets = useAppSelector(selectAllBudgets);
     useEffect(() => {
         dispatch(fetchAccounts());
+        dispatch(fetchBudgets());
     }, [dispatch]);
     
     const handleSubmit = async (e: React.FormEvent) => {
@@ -107,18 +108,13 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                                 step="0.01"
                             />
 
-                            <Select
-                                label="Category"
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                required
-                            >
+                            <Select label="Category" value={category} onChange={(e)=> setCategory(e.target.value)} required>
                                 <option value="">Select Category</option>
-                                <option value="Salary">Salary</option>
-                                <option value="Groceries">Groceries</option>
-                                <option value="Utilities">Utilities</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Transportation">Transportation</option>
+                                    {budgets.map(budget => (
+                                        <option key={budget.id} value={budget.category}>
+                                        {budget.category}
+                                        </option>
+                                    ))}
                             </Select>
 
                             <Input

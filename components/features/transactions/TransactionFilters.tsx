@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/Input";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setFilter, clearFilters, selectFilteredTransactions, setSortBy, setSortOrder, setSearchQuery } from "@/store/slices/transactionsSlice";
 import { useState } from "react";
+import { selectAllBudgets } from "@/store/slices/budgetsSlice";
 export function TransactionFilters() {
     const dispatch = useAppDispatch();
     const filteredTransactions = useAppSelector(selectFilteredTransactions);
-    
+    const budgets = useAppSelector(selectAllBudgets);
     // Add state to track current filter values
     const [category, setCategory] = useState('');
     const [type, setType] = useState('');
@@ -47,23 +48,14 @@ export function TransactionFilters() {
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <Select
-                            label="Category"
-                            value={category}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setCategory(value);
-                                dispatch(setFilter({ 
-                                    key: 'category', 
-                                    value: value === '' ? undefined : value 
-                                }));
-                            }}
-                        >
-                            <option value="">All </option>
-                            <option value="Salary">Salary</option>
-                            <option value="Groceries">Groceries</option>
-                            <option value="Utilities">Utilities</option>  
-                        </Select>
+                    <Select label="Category" value={category} onChange={(e)=> setCategory(e.target.value)} required>
+                      <option value="">Category</option>
+                      {budgets.map(budget => (
+                        <option key={budget.id} value={budget.category}>
+                          {budget.category}
+                        </option>
+                      ))}
+                    </Select>
 
                         <Select
                             label="Type"

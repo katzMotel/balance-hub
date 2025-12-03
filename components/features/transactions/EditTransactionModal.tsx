@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { editTransaction } from '@/store/slices/transactionsSlice';
 import { Transaction, TransactionType } from '@/types/types.index';
 import { fetchAccounts, selectAllAccounts } from '@/store/slices/accountsSlice';
-
+import { fetchBudgets,selectAllBudgets } from '@/store/slices/budgetsSlice';
 interface EditTransactionModalProps {
     transaction: Transaction;
     isOpen: boolean;
@@ -24,9 +24,10 @@ export function EditTransactionModal({ isOpen, onClose, transaction }: EditTrans
     const [type, setType] = useState<TransactionType>(transaction.type);
     const dispatch = useAppDispatch();
     const accounts = useAppSelector(selectAllAccounts);
-    
+    const budgets = useAppSelector(selectAllBudgets);
     useEffect(() => {
         dispatch(fetchAccounts());
+        dispatch(fetchBudgets());
     }, [dispatch]);
 
     // Update state when transaction changes
@@ -123,11 +124,12 @@ export function EditTransactionModal({ isOpen, onClose, transaction }: EditTrans
                                 required
                             >
                                 <option value="">Select Category</option>
-                                <option value="Salary">Salary</option>
-                                <option value="Groceries">Groceries</option>
-                                <option value="Utilities">Utilities</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Transportation">Transportation</option>
+                                {budgets.map(budget=> (
+                                    <option key={budget.id} value={budget.category}>
+                                    {budget.category}
+                                    </option>
+                                ))}
+                                
                             </Select>
 
                             <Input

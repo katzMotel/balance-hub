@@ -23,18 +23,16 @@ export const fetchBudgets = createAsyncThunk(
         return[
             {
                id:'1',
-               category: "Grocery",
+               category: "Groceries",
                amount:250,
                period: 'weekly' as const,
-               spent:135,
                createdAt: new Date().toISOString(),
             },
             {
-                id:'1',
-                category: "Dining Out",
+                id:'2',
+                category: "Utilities",
                 amount: 400,
                 period: 'weekly' as const,
-                spent: 228,
                 createdAt: new Date().toISOString(),
             },
             {
@@ -42,7 +40,6 @@ export const fetchBudgets = createAsyncThunk(
                 category:"Entertainment",
                 amount: 150,
                 period: 'weekly' as const,
-                spent: 87,
                 createdAt: new Date().toISOString(), 
             },
             {
@@ -50,7 +47,6 @@ export const fetchBudgets = createAsyncThunk(
                 category:"Health/Medical",
                 amount:1000,
                 period: 'monthly' as const,
-                spent: 500,
                 createdAt: new Date().toISOString(),
             }
         ]
@@ -68,6 +64,23 @@ export const addBudget = createAsyncThunk(
         };
     }
 );
+export const selectBudgetsWithSpent = (state: RootState) => {
+    const budgets = state.budgets.budgets;
+    const transactions = state.transactions.transactions;
+  
+    return budgets.map(budget => {
+      // Calculate spent amount for this budget's category
+      const spent = transactions
+        .filter(t => t.category === budget.category && t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  
+      return {
+        ...budget,
+        spent
+      };
+    });
+  };
+
 const budgetsSlice = createSlice({
     name: 'budgets',
     initialState,

@@ -1,5 +1,6 @@
 export type AccountType = 'checking' | 'savings' | 'credit' | 'investment';
 export type TransactionType = 'income' | 'expense' ;
+export type BudgetPeriod = 'monthly' | 'weekly' | 'yearly'; 
 export interface Account {
   id: string;
   name: string;
@@ -24,6 +25,5 @@ export interface Budget{
   category: string;
   amount: number;
   period: 'monthly' | 'weekly' | 'yearly';
-  spent: number;
   createdAt: string;
 }
