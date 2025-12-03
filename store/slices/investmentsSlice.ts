@@ -96,5 +96,22 @@ const InvestmentsSlice = createSlice({
     },
 });
 export const selectAllInvestments = (state:RootState) => state.investments.investments;
+export const selectPortfolioSummary = (state: RootState) => {
+    const investments = state.investments.investments;
+    const totalValue = investments.reduce((sum,inv) =>
+    sum + (inv.shares * inv.currentPrice),0
+    );
+    const totalCost = investments.reduce((sum, inv) =>
+        sum + (inv.shares * inv.purchasePrice),0
+    );
+    const totalGain = totalValue - totalCost;
+    const totalGainPercent = totalCost > 0 ? (totalGain/totalCost) * 100 : 0;
+    return {
+        totalValue,
+        totalCost,
+        totalGain,
+        totalGainPercent
+    };
+};
 export const{editInvestment,deleteInvestment} = InvestmentsSlice.actions;
 export default InvestmentsSlice.reducer;
