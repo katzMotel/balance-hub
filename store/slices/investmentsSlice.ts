@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { Investment } from "@/types/types.index";
+import { getMultipleStockPrices } from "@/lib/api/stocks";
 
 interface InvestmentsState{
     investments: Investment[];
@@ -14,7 +15,15 @@ const initialState: InvestmentsState ={
     lastUpdated:null,
     
 }
-
+export const updatePrices = createAsyncThunk(
+    'investments/updatePrices',
+    async(_, {getState}) =>{
+        const state = getState() as RootState;
+        const symbols = state.investments.investments.map(inv => inv.symbol);
+        const prices = await getMultipleStockPrices(symbols);
+        return prices;
+    }
+);
 export const fetchInvestments = createAsyncThunk(
     'investments/fetchInvestments',
     async() => {
@@ -92,6 +101,17 @@ const InvestmentsSlice = createSlice({
         })
         .addCase(addInvestment.fulfilled, (state,action)=>{
             state.investments.push(action.payload);
+        })
+        .addCase(updatePrices.fulfilled, (state,action)=>{
+            state.investments = state.investments.map(inv => ({
+                ...inv,
+                currentPrice: action.payload[inv.symbol] || inv.currentPrice
+            }));
+            state.lastUpdated = new Date().toISOString();
+            state.loading = false;
+        })
+        .addCase(updatePrices.pending, (state)=>{
+            state.loading = true;
         })
     },
 });
