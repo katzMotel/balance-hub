@@ -195,5 +195,33 @@ export const selectRecentTransactions = (state: RootState) =>
   [...state.transactions.transactions]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5);
+export const selectChartData = (state: RootState) =>{
+  const transactions = state.transactions.transactions;
+  const today = new Date();
+  const last7Days = Array.from({length: 7}, (_, i) =>{
+    const date = new Date(today);
+    date.setDate(date.getDate() - (6 - i));
+    return date.toISOString().split('T')[0];
+  });
 
+  const chartData = last7Days.map(date => ({
+    date,
+    income:0,
+    expenses:0,
+  }));
+
+  transactions.forEach(transaction => {
+    const transactionDate = transaction.date.split('T')[0];
+    const dataPoint = chartData.find(d => d.date === transactionDate);
+
+    if(dataPoint){
+      if(transaction.type === 'income'){
+        dataPoint.income += transaction.amount;
+      } else{
+        dataPoint.expenses += Math.abs(transaction.amount);
+      }
+    }
+  });
+  return chartData;
+}
 export default transactionsSlice.reducer;

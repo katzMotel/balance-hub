@@ -11,6 +11,7 @@ import {
   selectTotalExpenses,
   selectRecentTransactions,
   fetchTransactions,
+  selectChartData,
 } from '@/store/slices/transactionsSlice';
 import { StatCard } from '@/components/ui/StatCard';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -25,7 +26,7 @@ export default function DashboardPage() {
   const totalIncome = useAppSelector(selectTotalIncome);
   const totalExpenses = useAppSelector(selectTotalExpenses);
   const recentTransactions = useAppSelector(selectRecentTransactions);
-
+  const chartData = useAppSelector(selectChartData);
   useEffect(() => {
     const hasLocalStorage = localStorage.getItem('balancehub-data');
     if(!hasLocalStorage){
@@ -52,7 +53,7 @@ export default function DashboardPage() {
 
       {/* Chart */}
       <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
-        <FinanceChart /> {/* Changed from AreaChart to FinanceChart */}
+        <FinanceChart  data={chartData}/> 
       </div>
 
       {/* Stats Grid */}
