@@ -22,8 +22,11 @@ export default function AccountsPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchAccounts());
-    }, [dispatch]);
+        const hasLocalStorage = localStorage.getItem('balancehub-data');
+        if (!hasLocalStorage){
+            dispatch(fetchAccounts());
+            }
+        }, [dispatch, accounts.length]);
 
     const handleEdit = (account: Account) => {
         setSelectedAccount(account);

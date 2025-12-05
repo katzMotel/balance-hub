@@ -20,8 +20,12 @@ export default function BudgetsPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchBudgets());
-    }, [dispatch]);
+        const hasLocalStorage = localStorage.getItem('balancehub-data');
+        if(!hasLocalStorage){
+            dispatch(fetchBudgets());
+        }
+        
+    }, [dispatch, budgets.length]);
     const handleEdit = (budget: Budget) =>{
         setSelectedBudget(budget);
         setIsEditModalOpen(true);

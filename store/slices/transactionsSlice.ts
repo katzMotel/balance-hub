@@ -105,6 +105,9 @@ const transactionsSlice = createSlice({
     deleteTransaction: (state, action: PayloadAction<string>) => {
       state.transactions = state.transactions.filter(t => t.id !== action.payload);
     },
+    restoreTransactions: (state, action: PayloadAction<Transaction[]>) => {
+      state.transactions = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -112,8 +115,13 @@ const transactionsSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
-        state.loading = false;
-        state.transactions = action.payload;
+        if(state.transactions.length === 0){
+          state.loading = false;
+          state.transactions = action.payload;
+        } else{
+          state.loading = false;
+        }
+        
       })
       .addCase(addTransaction.fulfilled, (state, action) => {
         state.transactions.push(action.payload);
@@ -122,7 +130,7 @@ const transactionsSlice = createSlice({
 });
 
 // Export actions
-export const { setFilter, clearFilters, setSortBy, setSortOrder, setSearchQuery, editTransaction, deleteTransaction } = transactionsSlice.actions;
+export const { restoreTransactions, setFilter, clearFilters, setSortBy, setSortOrder, setSearchQuery, editTransaction, deleteTransaction } = transactionsSlice.actions;
 
 // Selectors
 export const selectFilteredTransactions = (state: RootState) => {

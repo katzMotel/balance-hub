@@ -79,6 +79,9 @@ const accountsSlice = createSlice({
             state.accounts[index] = { ...state.accounts[index], ...action.payload.changes };
         }
     },
+    restoreAccounts: (state, action: PayloadAction<Account[]>) =>{
+      state.accounts = action.payload;
+    }
     
   },
   extraReducers: (builder) => {
@@ -89,8 +92,13 @@ const accountsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchAccounts.fulfilled, (state, action) => {
-        state.loading = false;
-        state.accounts = action.payload;
+        if(state.accounts.length === 0){
+          state.loading = false;
+          state.accounts = action.payload;
+        } else {
+          state.loading = false;
+        }
+        
       })
       .addCase(fetchAccounts.rejected, (state, action) => {
         state.loading = false;
@@ -103,7 +111,7 @@ const accountsSlice = createSlice({
 });
 
 // Export actions
-export const { addAccountDirect, deleteAccount, editAccount } = accountsSlice.actions;
+export const { addAccountDirect, deleteAccount, editAccount, restoreAccounts } = accountsSlice.actions;
 
 // Selectors - functions to read from state
 export const selectAllAccounts = (state: RootState) => state.accounts.accounts;

@@ -89,6 +89,10 @@ const InvestmentsSlice = createSlice({
         deleteInvestment: (state, action:PayloadAction<string>)=>{
             state.investments = state.investments.filter(i => i.id!== action.payload);
         },
+        restoreInvestments: (state, action: PayloadAction<Investment[]>) =>{
+            state.investments = action.payload;
+            state.lastUpdated = null;
+        }
     },
     extraReducers:(builder) =>{
         builder
@@ -96,8 +100,13 @@ const InvestmentsSlice = createSlice({
             state.loading = true;
         })
         .addCase(fetchInvestments.fulfilled, (state, action)=>{
-            state.loading = false;
-            state.investments = action.payload;
+            if (state.investments.length === 0){
+                state.loading = false;
+                state.investments = action.payload;
+            } else{
+                state.loading = false;
+            }
+            
         })
         .addCase(addInvestment.fulfilled, (state,action)=>{
             state.investments.push(action.payload);
@@ -112,7 +121,7 @@ const InvestmentsSlice = createSlice({
         })
         .addCase(updatePrices.pending, (state)=>{
             state.loading = true;
-        })
+        });
     },
 });
 export const selectAllInvestments = (state:RootState) => state.investments.investments;
@@ -133,5 +142,5 @@ export const selectPortfolioSummary = (state: RootState) => {
         totalGainPercent
     };
 };
-export const{editInvestment,deleteInvestment} = InvestmentsSlice.actions;
+export const{editInvestment,deleteInvestment, restoreInvestments} = InvestmentsSlice.actions;
 export default InvestmentsSlice.reducer;

@@ -23,10 +23,40 @@ export default function InvestmentsPage() {
     const portfolioSummary = useAppSelector(selectPortfolioSummary);
     const loading = useAppSelector((state) => state.investments.loading);
     const lastUpdated = useAppSelector((state) => state.investments.lastUpdated);
-
+    const [refreshCountdown, setRefreshCountdown] = useState(300);
     useEffect(() => {
-        dispatch(fetchInvestments());
-    }, [dispatch]);
+        const hasLocalStorage = localStorage.getItem('balancehub-data');
+        if (!hasLocalStorage){
+            dispatch(fetchInvestments());
+        }
+        
+    }, [dispatch, investments.length]);
+    useEffect(() =>{
+        const AUTO_REFRESH_INTERVAL = 5 * 60 *1000;
+        setRefreshCountdown(300);
+        const countdownId = setInterval(()=>{
+            setRefreshCountdown((prev) =>{
+                if(prev <=1){
+                    return 300;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        const refreshId = setInterval(()=>{
+            console.log('Auto-refreshing stock prices...');
+            dispatch(updatePrices());
+            setRefreshCountdown(300);
+        }, AUTO_REFRESH_INTERVAL)
+        return () => {
+            clearInterval(countdownId);
+            clearInterval(refreshId);
+        }
+    },[dispatch])
+    const formatCountdown = (seconds:number)=>{
+        const mins = Math.floor(seconds/ 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
     const handleEdit = (investment: Investment) => {
         setSelectedInvestment(investment);
@@ -78,21 +108,26 @@ export default function InvestmentsPage() {
                             </p>
                         </div>
                         <div className="flex flex-col items-start md:items-end gap-2">
-                            <Button 
-                                onClick={() => dispatch(updatePrices())}
-                                disabled={loading}
-                                size="sm"
-                                className="w-full md:w-auto"
-                                >
-                                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                                Refresh Prices
-                            </Button>
-                            {lastUpdated && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    Last updated: {formatDistanceToNow(new Date(lastUpdated))} ago
-                                </p>
-                         )}
-                        </div>
+    <div className="flex items-center gap-2">
+        <Button 
+            onClick={() => dispatch(updatePrices())}
+            disabled={loading}
+            size="sm"
+            className="w-full md:w-auto"
+        >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh Prices
+        </Button>
+        <Badge variant="success" className="text-xs">
+            Auto: {formatCountdown(refreshCountdown)}
+        </Badge>
+    </div>
+    {lastUpdated && (
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+            Last updated: {formatDistanceToNow(new Date(lastUpdated))} ago
+        </p>
+    )}
+</div>
                     </div>
                 </CardContent>
             </Card>

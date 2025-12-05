@@ -27,8 +27,11 @@ export default function DashboardPage() {
   const recentTransactions = useAppSelector(selectRecentTransactions);
 
   useEffect(() => {
-    dispatch(fetchAccounts());
-    dispatch(fetchTransactions());
+    const hasLocalStorage = localStorage.getItem('balancehub-data');
+    if(!hasLocalStorage){
+      dispatch(fetchAccounts());
+      dispatch(fetchTransactions());
+    }
   }, [dispatch]);
 
   const savingsRate = totalIncome > 0 

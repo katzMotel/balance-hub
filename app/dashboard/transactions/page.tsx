@@ -1,5 +1,5 @@
 'use client';
-
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { 
@@ -26,8 +26,11 @@ export default function TransactionsPage() {
   const [selectedTransactionId, setSelectedTransactionId] = useState<string>('');
   
   useEffect(() => {
-    dispatch(fetchTransactions());
-  }, [dispatch]);
+    const hasLocalStorage = localStorage.getItem('balancehub-data');
+    if (!hasLocalStorage){
+      dispatch(fetchTransactions());
+    }
+  }, [dispatch, transactions.length]);
 
   return (
     <div className="space-y-6">

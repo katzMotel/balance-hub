@@ -94,6 +94,9 @@ const budgetsSlice = createSlice({
        deleteBudget: (state, action:PayloadAction<string>)=>{
         state.budgets = state.budgets.filter(b => b.id!== action.payload);
        },
+       restoreBudgets: (state, action: PayloadAction<Budget[]>) =>{
+        state.budgets = action.payload;
+       }
     },
     extraReducers:(builder)=>{
         builder
@@ -101,8 +104,13 @@ const budgetsSlice = createSlice({
             state.loading = true;
         })
         .addCase(fetchBudgets.fulfilled, (state, action)=>{
-            state.loading = false;
-            state.budgets = action.payload;
+            if(state.budgets.length === 0){
+                state.loading = false;
+                state.budgets = action.payload;
+            } else{
+                state.loading = false;
+            }
+            
         })
         .addCase(addBudget.fulfilled, (state, action)=>{
             state.budgets.push(action.payload);
@@ -114,5 +122,5 @@ const budgetsSlice = createSlice({
 export const selectAllBudgets = (state: RootState) => state.budgets.budgets;
 export const selectBudgetByCategory = (state:RootState, category: string) =>
     state.budgets.budgets.find(b => b.category === category);
-export const{editBudget, deleteBudget } = budgetsSlice.actions;
+export const{editBudget, deleteBudget, restoreBudgets } = budgetsSlice.actions;
 export default budgetsSlice.reducer;
