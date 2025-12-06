@@ -114,12 +114,7 @@ export default function AccountsPage() {
                                     </p>
                                 </div>
 
-                                {/* Institution */}
-                                {account.institution && (
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        {account.institution}
-                                    </p>
-                                )}
+                                
                             </div>
                         </CardContent>
                     </Card>
