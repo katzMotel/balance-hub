@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 
-// Define what variants we support
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+// Define what variants are supported
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost'| 'success' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
