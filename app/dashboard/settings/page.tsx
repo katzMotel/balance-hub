@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/Button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Download, Trash2, ExternalLink, Github } from "lucide-react";
 import { ClearDataModal } from "@/components/features/settings/ClearDataModal";
+import { exportAllToCSV } from "@/lib/utils/csvExport";
+import { clearState } from "@/lib/utils/localStorage";
+
 export default function SettingsPage() {
     const dispatch = useAppDispatch();
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -15,7 +18,7 @@ export default function SettingsPage() {
     const budgets = useAppSelector((state) => state.budgets);
     const investments = useAppSelector((state) => state.investments);
     
-    const handleExportData = () => {
+    const handleExportJSON = () => {
         const data = {
             accounts: accounts.accounts,
             transactions: transactions.transactions,
@@ -23,7 +26,6 @@ export default function SettingsPage() {
             investments: investments.investments,
             exportedAt: new Date().toISOString(),
         };
-        
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -32,11 +34,20 @@ export default function SettingsPage() {
         link.click();
         URL.revokeObjectURL(url);
     };
+
+    const handleExportCSV = () => {
+        exportAllToCSV(
+            accounts.accounts,
+            transactions.transactions,
+            budgets.budgets,
+            investments.investments
+        );
+    };
     
     const handleConfirmClear = () => {
-        setIsConfirmModalOpen(true);
+        clearState();
+        setIsConfirmModalOpen(false);
         window.location.reload();
-        
     };
     
     return (
@@ -58,19 +69,27 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        {/* Export Section */}
+                        <div className="space-y-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                             <div>
                                 <h3 className="font-medium text-gray-900 dark:text-white">Export Data</h3>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Download all your data as JSON
+                                    Download all your data
                                 </p>
                             </div>
-                            <Button onClick={handleExportData} variant="outline">
-                                <Download className="h-4 w-4 mr-2" />
-                                Export
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button onClick={handleExportJSON} variant="outline" size="sm" className="flex-1">
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Export JSON
+                                </Button>
+                                <Button onClick={handleExportCSV} variant="outline" size="sm" className="flex-1">
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Export CSV
+                                </Button>
+                            </div>
                         </div>
                         
+                        {/* Clear Data Section */}
                         <div className="flex items-center justify-between p-4 border border-danger-200 dark:border-danger-800 rounded-lg bg-danger-50 dark:bg-danger-900/20">
                             <div>
                                 <h3 className="font-medium text-gray-900 dark:text-white">Clear All Data</h3>
@@ -127,12 +146,12 @@ export default function SettingsPage() {
                     </div>
                 </CardContent>
             </Card>
+            
             <ClearDataModal
-            isOpen={isConfirmModalOpen}
-            onClose={() => setIsConfirmModalOpen(false)}
-            onConfirm={handleConfirmClear}
-        />
+                isOpen={isConfirmModalOpen}
+                onClose={() => setIsConfirmModalOpen(false)}
+                onConfirm={handleConfirmClear}
+            />
         </div>
-       
     );
 }
